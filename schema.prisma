@@ -1,0 +1,98 @@
+// datasource db defines the database connection settings.
+// It is configured for PostgreSQL and uses an environment variable for the connection URL.
+// The 'extensions' feature enables the use of PostgreSQL-specific data types.
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+}
+
+// generator db configures Prisma Client settings.
+// It is set up to use Prisma Client Python with asyncio interface and specific features.
+generator db {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+  previewFeatures      = ["postgresqlExtensions"]
+}
+
+model User {
+  id             String   @id @default(dbgenerated("gen_random_uuid()"))
+  email          String   @unique
+  hashedPassword String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  role           Role     @default(GENERALUSER)
+
+  Preferences Preference[]
+  Feedbacks   Feedback[]
+  JokeLikes   JokeLike[]
+  AuthToken   AuthToken[]
+}
+
+model Preference {
+  id             String   @id @default(dbgenerated("gen_random_uuid()"))
+  userId         String
+  preferenceType String
+  value          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Joke {
+  id          String   @id @default(dbgenerated("gen_random_uuid()"))
+  setup       String
+  punchline   String
+  isModerated Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  Likes JokeLike[]
+}
+
+model JokeLike {
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
+  jokeId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  Joke Joke @relation(fields: [jokeId], references: [id], onDelete: Cascade)
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Feedback {
+  id           String   @id @default(dbgenerated("gen_random_uuid()"))
+  userId       String
+  content      String
+  feedbackType String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuthToken {
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
+  userId    String
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model APIKey {
+  id          String   @id @default(dbgenerated("gen_random_uuid()"))
+  serviceName String
+  apiKey      String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Role {
+  GENERALUSER
+  DEVELOPER
+  ADMIN
+}
+

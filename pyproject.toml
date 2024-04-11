@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "joke-api"
+version = "0.1.0"
+description = "Based on the user's preference for dad jokes due to their universal appeal and safe-to-share nature, and leveraging the found dad joke, 'Why don't eggs tell jokes? Because they'd crack each other up.', we will implement a single endpoint in a FastAPI application. This endpoint will serve a pre-selected or dynamically generated dad joke upon request. The tech stack to achieve this includes Python for the programming language, FastAPI as the API framework due to its simplicity and performance for building web APIs, PostgreSQL for the database to store jokes or user preferences if needed in the future, and Prisma as the ORM to facilitate database operations within the Python environment. This setup will ensure a robust, scalable, and easy-to-maintain web service that delivers dad jokes to users, aligning with the user's humor preferences and contributing to a light-hearted user experience."
+authors = ["AutoGPT <info@agpt.co>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+fastapi = "^0.78.0"
+passlib = {version = "^1.7.4", extras = ["bcrypt"]}
+prisma = "*"
+pydantic = "*"
+python-jose = {version = "^3.3.0", extras = ["cryptography"]}
+uvicorn = "*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
